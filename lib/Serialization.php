@@ -107,7 +107,7 @@ abstract class Serialization
 		$this->check_except();
 		$this->check_methods();
 		$this->check_include();
-		$this->check_only_method();        
+		$this->check_only_method();
 	}
 
 	private function check_only()
@@ -136,21 +136,24 @@ abstract class Serialization
 		{
 			$this->options_to_a('methods');
 
-			foreach ($this->options['methods'] as $method)
+			foreach ($this->options['methods'] as $method => $name)
 			{
+				if (is_numeric($method))
+					$method = $name;
+
 				if (method_exists($this->model, $method))
                 {
-					$this->attributes[$method] = $this->model->$method();
+					$this->attributes[$name] = $this->model->$method();
                 }
                 else if (method_exists($this->model, "get_{$method}"))
                 {
                     $getter = "get_{$method}";
-                    $this->attributes[$method] = $this->model->$getter();
+                    $this->attributes[$name] = $this->model->$getter();
                 }
 			}
 		}
 	}
-	
+
 	private function check_only_method()
 	{
 		if (isset($this->options['only_method']))
